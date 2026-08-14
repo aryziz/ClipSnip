@@ -21,5 +21,13 @@ namespace ClipSnip.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        [HttpPost]
+        public IActionResult ImageResult(IFormFile image)
+        {
+            
+            if (image != null) ViewBag.results = "You have hair!";
+            else ViewBag.results = "no hair for you";
+            return View();
+        }
     }
 }

@@ -1,34 +1,21 @@
 using ClipSnip.Data;
+using ClipSnip.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var provider = builder.Configuration["DatabaseProvider"] ?? throw new InvalidOperationException("Database provider not specified in configuration.");
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    switch (provider)
-    {
-        case "Sqlite":
-            options.UseSqlite(connectionString);
-            break;
-
-        case "SqlServer":
-            options.UseSqlServer(connectionString);
-            break;
-        default:
-            throw new InvalidOperationException(
-                $"Unsupported database provider: {provider}");
-    }
-});
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
@@ -40,10 +27,20 @@ if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
 
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var services = scope.ServiceProvider;
 
-    await db.Database.EnsureCreatedAsync();
-    app.UseMigrationsEndPoint();
+    var db = services.GetRequiredService<ApplicationDbContext>();
+    var userManager =
+        services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager =
+        services.GetRequiredService<RoleManager<IdentityRole>>();
+
+    await db.Database.MigrateAsync();
+
+    await ApplicationDbInitializer.Initialize(
+        db,
+        userManager,
+        roleManager);
 }
 else
 {
@@ -55,6 +52,7 @@ else
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

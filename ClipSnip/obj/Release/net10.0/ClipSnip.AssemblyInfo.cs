@@ -11,12 +11,11 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("aspnet-ClipSnip-681bad87-9b60-4d01-afff-9cb9d2fd5d29")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClipSnip")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f2edef014c5960e7678f64cecd4b59269aa8668e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7907dfc8a952fcb17815a24c51ebe6d8e91c1b61")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClipSnip")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ClipSnip")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

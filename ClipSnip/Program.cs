@@ -5,20 +5,44 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var provider = builder.Configuration["DatabaseProvider"] ?? throw new InvalidOperationException("Database provider not specified in configuration.");
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+{
+    switch (provider)
+    {
+        case "Sqlite":
+            options.UseSqlite(connectionString);
+            break;
+
+        case "SqlServer":
+            options.UseSqlServer(connectionString);
+            break;
+        default:
+            throw new InvalidOperationException(
+                $"Unsupported database provider: {provider}");
+    }
+});
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
+
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    await db.Database.EnsureCreatedAsync();
     app.UseMigrationsEndPoint();
 }
 else

@@ -1,4 +1,22 @@
-﻿<h1>Analysis</h1>
+﻿@{
+    ViewData["Title"] = "Face Analysis";
+}
 
+<h1>Face Analysis</h1>
 
-<p>Upload an image</p>
+<input id="imageInput"
+       type="file"
+       accept="image/*"
+       capture="user" />
+
+<div>
+    <img id="imagePreview"
+         alt="Face preview"
+         hidden />
+</div>
+
+<p id="status">Select an image.</p>
+
+@section Scripts {
+    <script type="module" src="~/js/analysis.js"></script>
+}

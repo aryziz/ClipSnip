@@ -1,6 +1,12 @@
 import {
     FaceLandmarker, FilesetResolver
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
+import {
+    calculateFaceMeasurements
+} from "./faceMeasurements.js";
+import {
+    classify
+} from "./faceClassifier.js";
 
 let faceLandmarker;
 
@@ -26,9 +32,54 @@ async function initializeMediaPipe() {
 
 await initializeMediaPipe();
 
+function detectFace(image) { return faceLandmarker.detect(image); }
+
 
 const imageInput = document.getElementById("imageInput");
 
 const imagePreview = document.getElementById("imagePreview");
 
 const status = document.getElementById("status");
+
+function getFaceLandmarks(result) {
+    if (!result.faceLandmarks || result.faceLandmarks.length === 0) {
+        throw new Error("No face detected.");
+    }
+
+    if (result.faceLandmarks.length > 1) {
+        throw new Error("Multiple faces detected. Please provide an image with a single face.");
+    }
+    return result.faceLandmarks[0];
+}
+
+
+imageInput.addEventListener("change", async () => {
+    const file = imageInput.files?.[0];
+    if (!file) {
+        return;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+
+    imagePreview.src = imageUrl;
+    imagePreview.hidden = false;
+
+    await imagePreview.decode();
+
+    status.textContent = "Analyzing...";
+
+    const result = detectFace(imagePreview);
+
+    try
+    {
+        const landmarks = getFaceLandmarks(result);
+
+        const measurements = calculateFaceMeasurements(landmarks, imagePreview.naturalWidth, imagePreview.naturalHeight);
+        // const faceClassifier = classify(measurements);
+        // return JSON.stringify(faceClassifier);
+    }
+    catch (error)
+    {
+        status.textContent = error.message;
+    }
+});

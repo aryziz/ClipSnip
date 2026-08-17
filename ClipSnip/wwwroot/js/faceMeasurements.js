@@ -77,3 +77,14 @@ export function calculateFaceMeasurements(
         jawWidth
     };
 }
+
+export function calculateFaceRatios(measurements) {
+    const { faceLength, foreheadWidth, cheekboneWidth, jawWidth } = measurements;
+
+    return {
+        lengthToWidth: faceLength / cheekboneWidth,
+        foreheadToCheekbone: foreheadWidth / cheekboneWidth,
+        jawToCheekbone: jawWidth / cheekboneWidth,
+        foreheadToJaw: foreheadWidth / jawWidth
+    };
+}

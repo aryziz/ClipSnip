@@ -2,7 +2,8 @@ import {
     FaceLandmarker, FilesetResolver
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
 import {
-    calculateFaceMeasurements
+    calculateFaceMeasurements,
+    calculateFaceRatios,
 } from "./faceMeasurements.js";
 import {
     classify
@@ -75,8 +76,11 @@ imageInput.addEventListener("change", async () => {
         const landmarks = getFaceLandmarks(result);
 
         const measurements = calculateFaceMeasurements(landmarks, imagePreview.naturalWidth, imagePreview.naturalHeight);
-        // const faceClassifier = classify(measurements);
-        // return JSON.stringify(faceClassifier);
+        const ratios = calculateFaceRatios(measurements);
+        const faceClassifier = classify(ratios);
+        console.log("Data: ", ratios), 
+        console.log(`Detected face shape: ${faceClassifier}`);
+        status.textContent = `Detected face shape: ${faceClassifier}`;
     }
     catch (error)
     {

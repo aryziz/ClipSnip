@@ -78,9 +78,24 @@ imageInput.addEventListener("change", async () => {
         const measurements = calculateFaceMeasurements(landmarks, imagePreview.naturalWidth, imagePreview.naturalHeight);
         const ratios = calculateFaceRatios(measurements);
         const faceClassifier = classify(ratios);
-        console.log("Data: ", ratios), 
+        console.log("Data: ", ratios);
         console.log(`Detected face shape: ${faceClassifier}`);
         status.textContent = `Detected face shape: ${faceClassifier}`;
+        const data = { data: ratios, result: faceClassifier }
+
+        const response = await fetch("/Analysis/Save", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to save data: ${response.statusText}`);
+        }
+
+        const responseData = await response.json();
     }
     catch (error)
     {

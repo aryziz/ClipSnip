@@ -5,4 +5,5 @@ namespace ClipSnip.Models;
 public class ApplicationUser: IdentityUser
 {
     // Add custom user properties here later
+    public ICollection<Appointment> Appointments { get; set; } = [];
 }

@@ -1,5 +1,6 @@
 web/wwwroot/data
 
+.env
 .idea
 bin
 cmake-build-*

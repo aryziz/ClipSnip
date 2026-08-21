@@ -83,7 +83,7 @@ imageInput.addEventListener("change", async () => {
         status.textContent = `Detected face shape: ${faceClassifier}`;
         const data = { data: ratios, result: faceClassifier }
 
-        const response = await fetch("/Analysis/Save", {
+        const response = await fetch("/hairstyle-finder/analyze", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

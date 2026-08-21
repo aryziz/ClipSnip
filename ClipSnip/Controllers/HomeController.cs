@@ -24,14 +24,5 @@ namespace ClipSnip.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        [HttpPost]
-        public IActionResult ImageResult(string JsonRatios)
-        {
-            //JsonRatios = "{\"ratios\":{\"lengthToWidth\":0.56},\"classifiedFaceShape\":\"oval\"}";
-            FaceRatios ratios = new FaceRatios(JsonRatios);
-            string feedBack = ratios.FeedBack();
-            ViewBag.feedBack = feedBack;
-            return View();
-        }
     }
 }

@@ -2,6 +2,8 @@ using ClipSnip.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace ClipSnip.Controllers
 {
@@ -23,11 +25,12 @@ namespace ClipSnip.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
         [HttpPost]
-        public IActionResult ImageResult(IFormFile image)
+        public IActionResult ImageResult(string JsonRatios)
         {
-            
-            if (image != null) ViewBag.results = "You have hair!";
-            else ViewBag.results = "no hair for you";
+            //JsonRatios = "{\"ratios\":{\"lengthToWidth\":0.56},\"classifiedFaceShape\":\"oval\"}";
+            FaceRatios ratios = new FaceRatios(JsonRatios);
+            string feedBack = ratios.FeedBack();
+            ViewBag.feedBack = feedBack;
             return View();
         }
     }

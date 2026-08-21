@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Face Analysis";
+}
+
+
+
+<div class="text-center">
+    <h1 class="display-4">Find your hairstyle</h1>
+    <p>Upload a photo and we'll analyze your face shape.</p>
+
+    <form id="imageForm">
+        <div class="mb-3">
+            <i class="bi bi-upload fs-2"></i>
+
+            <p class="mt-2">
+                <input id="imageInput"
+                       name="image"
+                       type="file"
+                       accept="image/*"
+                       capture="user"
+                       class="form-control" />
+            </p>
+        </div>
+
+        <div class="mb-3">
+            <img id="imagePreview"
+                 alt="Face preview"
+                 class="img-fluid rounded"
+                 style="max-width: 400px;"
+                 hidden />
+        </div>
+
+        <p id="status">Select an image.</p>
+    </form>
+</div>
+
+@section Scripts {
+    <script type="module" src="~/js/analysis.js"></script>
+}

@@ -1,13 +1,10 @@
-﻿namespace ClipSnip.Models
+﻿namespace ClipSnip.Models;
+
+public class HairProfile
 {
-    public class HairProfile
-    {
-        public class HairProfile
-        {
-            public string FaceShape { get; set; }
-            public string HairType { get; set; }
-            public string HairLength { get; set; }
-            public string Gender { get; set; }
-        }
-    }
+    public string FaceShape { get; set; } = String.Empty;
+    public string HairType { get; set; } = String.Empty;
+    public string HairLength { get; set; } = String.Empty;
+    public string Gender { get; set; } = String.Empty;
+
 }

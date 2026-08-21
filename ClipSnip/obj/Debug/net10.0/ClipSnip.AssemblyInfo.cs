@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClipSnip")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a82716ebb0a0a44a48c118035dbbaf772437899")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4b743478d277df621774949438a79d064c89af00")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClipSnip")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ClipSnip")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

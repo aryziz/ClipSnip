@@ -1,6 +1,13 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy??";
+    ViewData["Description"] = "Privacy Policy page for ClipSnip, detailing how user data is handled and protected.";
 }
 <h1>@ViewData["Title"]</h1>
+<p>@ViewData["Description"]</p>
 
 <p>Use this page to detail your site's privacy policy.</p>
+
+<div class="mt-3">
+    <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Back to Home</a>
+    <button type="button" class="btn btn-outline-secondary ms-2" id="acceptPrivacyBtn">Accept</button>
+</div>

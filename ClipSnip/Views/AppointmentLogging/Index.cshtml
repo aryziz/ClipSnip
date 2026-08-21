@@ -1,0 +1,24 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div id="appointmentForm">
+    <label>Hairsyle:</label><br>
+    <select name="hairstyles" id="hairstyle">
+        <option value="buzzcut">Buzzcut</option>
+        <option value="hair2">More hair</option>
+        <option value="hair3">third hair</option>
+    </select><br />
+    <label>Duration in minutes:</label><br>
+    <input type="number" id="durationInMinutes" name="durationInMinutes" value="20"><br>
+    <label>Date:</label><br>
+    <input type="date" id="dateOfAppointment" name="dateOfAppointment">
+    <br><br>
+    <input type="submit" id="submitButton" value="Submit">
+</div> 
+
+@section Scripts {
+    <script type="module" src="~/js/appointmentlogging.js"></script>
+}

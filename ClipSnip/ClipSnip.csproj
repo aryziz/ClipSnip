@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Dockerfile" />
+    <None Type="Include" Include="Dockerfile" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,46 @@
+@model ClipSnip.Models.HairstyleRecommendationsViewModel
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Face shape: @Model.FaceShape</h5>
+
+        @if (Model.Reasons?.Any() == true)
+        {
+            <h6>Reasons</h6>
+            <ul>
+                @foreach (var r in Model.Reasons)
+                {
+                    <li>@r</li>
+                }
+            </ul>
+        }
+
+        @if (Model.Recommendations?.Any() == true)
+        {
+            <h6 class="mt-3">Recommended hairstyles</h6>
+            <div class="row g-3">
+                @foreach (var h in Model.Recommendations)
+                {
+                    <div class="col-12 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">@h.Name</h6>
+                                <p class="card-text">@h.Description</p>
+                                <p class="text-muted small">@string.Join(", ", h.SuitableFaceShapes)</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        } else {
+            <div class="col-12 col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">No recommendations found.</h6>
+                                <p class="card-text">More data is needed.</p>
+                            </div>
+                        </div>
+                    </div>
+        }
+    </div>
+</div>

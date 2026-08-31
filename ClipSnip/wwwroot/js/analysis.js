@@ -95,7 +95,13 @@ imageInput.addEventListener("change", async () => {
             throw new Error(`Failed to save data: ${response.statusText}`);
         }
 
-        const responseData = await response.json();
+        // Server returns an HTML partial. Insert it into the results container.
+        const html = await response.text();
+        const results = document.getElementById("results");
+        if (results) {
+            results.hidden = false;
+            results.innerHTML = html;
+        }
     }
     catch (error)
     {

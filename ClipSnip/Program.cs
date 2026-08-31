@@ -18,6 +18,11 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+// Recommendation service for hairstyle suggestions
+builder.Services.AddScoped<ClipSnip.Services.IRecommendationService, ClipSnip.Services.RecommendationService>();
+// Face-shape analyzer and repository used by recommendation service
+builder.Services.AddScoped<ClipSnip.Services.FaceShapeServices>();
+builder.Services.AddScoped<ClipSnip.Data.HairstyleRepository>();
 
 var app = builder.Build();
 

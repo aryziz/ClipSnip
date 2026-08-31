@@ -1,4 +1,6 @@
-﻿using ClipSnip.Models;
+﻿using System.Linq;
+using ClipSnip.Models;
+using ClipSnip.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClipSnip.Controllers;
@@ -6,6 +8,15 @@ namespace ClipSnip.Controllers;
 [Route("hairstyle-finder")]
 public class HairstyleFinderController : Controller
 {
+    private readonly IRecommendationService _recommendationService;
+    private readonly FaceShapeServices _faceShapeService;
+
+    public HairstyleFinderController(IRecommendationService recommendationService, FaceShapeServices faceShapeService)
+    {
+        _recommendationService = recommendationService;
+        _faceShapeService = faceShapeService;
+    }
+
     [HttpGet("")]
     public IActionResult Index()
     {
@@ -15,14 +26,13 @@ public class HairstyleFinderController : Controller
     [HttpPost("analyze")]
     public IActionResult Analyze([FromBody] FaceAnalysisRequest request)
     {
-        // Later:
-        // var recommendations =
-        //     _recommendationService.GetRecommendations(request);
-
-        Console.WriteLine(request.Result);
-        return Ok(new
+        if (request == null || request.Data == null)
         {
-            faceShape = request.Result
-        });
+            return BadRequest(new { error = "Invalid request. Expected JSON with face ratios." });
+        }
+
+        var vm = _recommendationService.GetRecommendations(request);
+
+        return PartialView("_ResultsPartial", vm);
     }
 }

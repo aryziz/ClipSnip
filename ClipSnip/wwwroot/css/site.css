@@ -22,8 +22,16 @@ body {
 }
 
 .face-analysis-page {
-  max-width: 760px;
+  width: min(100% - 2rem, 1100px);
   margin: 0 auto;
+}
+
+.analysis-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  align-items: start;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .upload-card {
@@ -38,16 +46,28 @@ body {
 
 .face-editor {
   position: relative;
-  display: inline-block;
+  display: block;
+  width: 100%;
   line-height: 0;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .face-editor img {
   display: block;
-  width: auto;
-  max-width: none;
-  max-height: none;
+  width: 100%;
+  height: auto;
+  max-height: 65vh;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.results-panel {
+  min-height: 8rem;
+  padding: 1rem;
+  text-align: left;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.75rem;
+  background: var(--bs-light);
 }
 
 .measurement-help {
@@ -56,6 +76,25 @@ body {
   border-radius: 0.75rem;
   background: var(--bs-light);
   border: 1px solid var(--bs-border-color);
+}
+
+@media (max-width: 767.98px) {
+  .face-analysis-page {
+    width: min(100% - 1rem, 600px);
+  }
+
+  .analysis-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .face-editor img {
+    max-height: 55vh;
+  }
+
+  .measurement-help,
+  .upload-card {
+    padding: 0.85rem;
+  }
 }
 
 .measurement-help li + li {

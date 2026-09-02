@@ -47,6 +47,9 @@ const status = document.getElementById("status");
 
 let imageRequestId = 0;
 let currentImageUrl;
+let resultsUpdateId = 0;
+let resultsUpdateTimer;
+let resultsAbortController;
 
 function clearEditableOverlay() {
     const parent = imagePreview.parentElement;
@@ -54,6 +57,50 @@ function clearEditableOverlay() {
 
     parent.querySelector('#face-overlay')?.remove();
     parent.querySelectorAll('.face-controls').forEach(control => control.remove());
+}
+
+function scheduleResultsUpdate(points) {
+    const results = document.getElementById('results');
+    if (!results) return;
+
+    clearTimeout(resultsUpdateTimer);
+    const updateId = ++resultsUpdateId;
+    results.hidden = false;
+    results.innerHTML = '<p class="text-muted mb-0">Updating recommendations...</p>';
+
+    resultsUpdateTimer = setTimeout(async () => {
+        resultsAbortController?.abort();
+        resultsAbortController = new AbortController();
+
+        try {
+            const measurements = calculateFaceMeasurements(
+                points,
+                imagePreview.naturalWidth,
+                imagePreview.naturalHeight);
+            const ratios = calculateFaceRatios(measurements);
+            const faceClassifier = classify(ratios);
+            const response = await fetch('/hairstyle-finder/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: ratios, result: faceClassifier }),
+                signal: resultsAbortController.signal
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to save data: ${response.statusText}`);
+            }
+
+            const html = await response.text();
+            if (updateId === resultsUpdateId) {
+                results.innerHTML = html;
+            }
+        }
+        catch (error) {
+            if (error.name !== 'AbortError' && updateId === resultsUpdateId) {
+                results.innerHTML = `<p class="text-danger mb-0">${error.message}</p>`;
+            }
+        }
+    }, 100);
 }
 
 function getFaceLandmarks(result) {
@@ -244,53 +291,18 @@ function setupEditableOverlay(initialPointsNormalized) {
             points[key].x = nx;
             points[key].y = ny;
             updateOverlayFromPoints();
+            scheduleResultsUpdate(points);
         });
     }
 
     updateOverlayFromPoints();
 
-    // Create controls: Confirm and Reset
+    // Create controls: Reset
     const controls = document.createElement('div');
     controls.className = 'face-controls';
     controls.style.marginTop = '8px';
     controls.style.display = 'flex';
     controls.style.gap = '8px';
-
-    const confirmBtn = document.createElement('button');
-    confirmBtn.type = 'button';
-    confirmBtn.className = 'btn btn-primary';
-    confirmBtn.textContent = 'Confirm measurements';
-    confirmBtn.addEventListener('click', async () => {
-        try {
-            status.textContent = 'Calculating...';
-            const measurements = calculateFaceMeasurements(points, imagePreview.naturalWidth, imagePreview.naturalHeight);
-            const ratios = calculateFaceRatios(measurements);
-            const faceClassifier = classify(ratios);
-            console.log('Data: ', ratios);
-            console.log(`Detected face shape: ${faceClassifier}`);
-            status.textContent = `Detected face shape: ${faceClassifier}`;
-
-            const data = { data: ratios, result: faceClassifier };
-
-            const response = await fetch('/hairstyle-finder/analyze', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) throw new Error(`Failed to save data: ${response.statusText}`);
-
-            const html = await response.text();
-            const results = document.getElementById('results');
-            if (results) {
-                results.hidden = false;
-                results.innerHTML = html;
-            }
-        }
-        catch (err) {
-            status.textContent = err.message;
-        }
-    });
 
     const resetBtn = document.createElement('button');
     resetBtn.type = 'button';
@@ -303,10 +315,12 @@ function setupEditableOverlay(initialPointsNormalized) {
             points[k].y = initialPointsNormalized[k].y;
         }
         updateOverlayFromPoints();
-        status.textContent = 'Markers reset. Adjust them if needed, then confirm measurements.';
+        scheduleResultsUpdate(points);
+        status.textContent = 'Markers reset. Recommendations updated.';
     });
 
-    controls.appendChild(confirmBtn);
     controls.appendChild(resetBtn);
     parent.appendChild(controls);
+
+    scheduleResultsUpdate(points);
 }

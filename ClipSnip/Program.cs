@@ -26,26 +26,32 @@ builder.Services.AddScoped<ClipSnip.Data.HairstyleRepository>();
 
 var app = builder.Build();
 
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var services = scope.ServiceProvider;
+    var db = services.GetRequiredService<ApplicationDbContext>();
+
+    await db.Database.MigrateAsync();
+
+    if (app.Configuration.GetValue<bool>("Database:Seed"))
+    {
+        app.Logger.LogInformation("Database seeding is enabled.");
+
+        await ApplicationDbInitializer.InitializeAsync(
+            services.GetRequiredService<UserManager<ApplicationUser>>(),
+            services.GetRequiredService<RoleManager<IdentityRole>>());
+    }
+    else
+    {
+        app.Logger.LogInformation("Database seeding is disabled.");
+    }
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    using var scope = app.Services.CreateScope();
-
-    var services = scope.ServiceProvider;
-
-    var db = services.GetRequiredService<ApplicationDbContext>();
-    var userManager =
-        services.GetRequiredService<UserManager<ApplicationUser>>();
-    var roleManager =
-        services.GetRequiredService<RoleManager<IdentityRole>>();
-
-    await db.Database.MigrateAsync();
-
-    await ApplicationDbInitializer.Initialize(
-        db,
-        userManager,
-        roleManager);
+    app.UseDeveloperExceptionPage();
 }
 else
 {

@@ -5,43 +5,86 @@ namespace ClipSnip.Data;
 
 public static class ApplicationDbInitializer
 {
-    public static async Task Initialize(ApplicationDbContext db, UserManager<ApplicationUser> um, RoleManager<IdentityRole> rm)
-    {
+    private const string UserRole = "User";
+    private const string SeedEmail = "user@example.com";
+    private const string SeedPassword = "Password1.";
 
-        if (!await rm.RoleExistsAsync("User"))
+    public static async Task InitializeAsync(
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager)
+    {
+        if (!await roleManager.RoleExistsAsync(UserRole))
         {
-            await rm.CreateAsync(new IdentityRole("User"));
+            var roleResult = await roleManager.CreateAsync(
+                new IdentityRole(UserRole));
+
+            EnsureSucceeded(roleResult, "creating the User role");
         }
 
-        // Regular user
-        var user = await um.FindByNameAsync("user");
+        var user = await userManager.FindByEmailAsync(SeedEmail)
+            ?? await userManager.FindByNameAsync("user");
 
         if (user is null)
         {
             user = new ApplicationUser
             {
-                UserName = "user",
-                Email = "user@example.com",
+                UserName = SeedEmail,
+                Email = SeedEmail,
                 EmailConfirmed = true
             };
 
-            var result =
-                await um.CreateAsync(user, "Password1.");
+            var userResult = await userManager.CreateAsync(
+                user,
+                SeedPassword);
 
-            if (!result.Succeeded)
-            {
-                throw new InvalidOperationException(
-                    string.Join(
-                        ", ",
-                        result.Errors.Select(e => e.Description)));
-            }
+            EnsureSucceeded(userResult, "creating the seed user");
         }
 
-        if (!await um.IsInRoleAsync(user, "User"))
+        if (!string.Equals(user.UserName, SeedEmail, StringComparison.OrdinalIgnoreCase))
         {
-            await um.AddToRoleAsync(user, "User");
+            var usernameResult = await userManager.SetUserNameAsync(
+                user,
+                SeedEmail);
+
+            EnsureSucceeded(usernameResult, "setting the seed user username");
         }
 
-        await db.SaveChangesAsync();
+        if (!await userManager.IsInRoleAsync(user, UserRole))
+        {
+            var roleAssignmentResult = await userManager.AddToRoleAsync(
+                user,
+                UserRole);
+
+            EnsureSucceeded(
+                roleAssignmentResult,
+                "assigning the User role");
+        }
+
+        if (user.EmailConfirmed == false)
+        {
+            user.EmailConfirmed = true;
+
+            var updateResult = await userManager.UpdateAsync(user);
+
+            EnsureSucceeded(updateResult, "confirming the seed user email");
+        }
+    }
+
+    private static void EnsureSucceeded(
+        IdentityResult result,
+        string operation)
+    {
+        if (result.Succeeded)
+        {
+            return;
+        }
+
+        var errors = string.Join(
+            "; ",
+            result.Errors.Select(error =>
+                $"{error.Code}: {error.Description}"));
+
+        throw new InvalidOperationException(
+            $"Identity failed while {operation}: {errors}");
     }
 }

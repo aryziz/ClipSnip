@@ -1,4 +1,4 @@
-const FACE_POINTS = {
+export const FACE_POINTS = {
     foreheadTop: 10,
     chin: 152,
 
@@ -12,11 +12,11 @@ const FACE_POINTS = {
     rightJaw: 397
 }
 
-function toPixel(landmark, imageWidth, imageHeight) {
+function toPixelFromNormalized(point, imageWidth, imageHeight) {
     return {
-        x: landmark.x * imageWidth,
-        y: landmark.y * imageHeight
-    }
+        x: point.x * imageWidth,
+        y: point.y * imageHeight
+    };
 }
 
 function calculateDistance(point1, point2) {
@@ -25,50 +25,18 @@ function calculateDistance(point1, point2) {
     return Math.hypot(dx, dy);
 }
 
-function distanceBetweenLandmarks(landmarks, index1, index2, imageWidth, imageHeight) {
-    const first = toPixel(landmarks[index1], imageWidth, imageHeight);
-    const second = toPixel(landmarks[index2], imageWidth, imageHeight);
+// New signature: accepts an object of normalized {x,y} points keyed by the FACE_POINTS names
+export function calculateFaceMeasurements(pointsNormalized, imageWidth, imageHeight) {
+    // Convert normalized points to pixel space
+    const p = {};
+    for (const key of Object.keys(pointsNormalized)) {
+        p[key] = toPixelFromNormalized(pointsNormalized[key], imageWidth, imageHeight);
+    }
 
-    return calculateDistance(first, second);
-}
-
-export function calculateFaceMeasurements(
-    landmarks,
-    imageWidth,
-    imageHeight
-) {
-    const faceLength = distanceBetweenLandmarks(
-        landmarks,
-        FACE_POINTS.foreheadTop,
-        FACE_POINTS.chin,
-        imageWidth,
-        imageHeight
-    );
-
-    const foreheadWidth = distanceBetweenLandmarks(
-        landmarks,
-        FACE_POINTS.leftForehead,
-        FACE_POINTS.rightForehead,
-        imageWidth,
-        imageHeight
-    );
-
-    const cheekboneWidth = distanceBetweenLandmarks(
-        landmarks,
-        FACE_POINTS.leftCheek,
-        FACE_POINTS.rightCheek,
-        imageWidth,
-        imageHeight
-    );
-
-    const jawWidth = distanceBetweenLandmarks(
-        landmarks,
-        FACE_POINTS.leftJaw,
-        FACE_POINTS.rightJaw,
-        imageWidth,
-        imageHeight
-    );
-
+    const faceLength = calculateDistance(p.foreheadTop, p.chin);
+    const foreheadWidth = calculateDistance(p.leftForehead, p.rightForehead);
+    const cheekboneWidth = calculateDistance(p.leftCheek, p.rightCheek);
+    const jawWidth = calculateDistance(p.leftJaw, p.rightJaw);
 
     return {
         faceLength,

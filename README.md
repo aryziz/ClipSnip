@@ -33,6 +33,4 @@ dotnet test
 
 ## Deployment
 
-ClipSnip is being prepared for containerized deployment to Azure using Docker, Azure Container Registry, Azure App Service, and Azure SQL Database.
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for local container setup and the deployment roadmap.
+...

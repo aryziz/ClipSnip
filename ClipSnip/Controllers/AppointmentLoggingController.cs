@@ -20,11 +20,18 @@ public class AppointmentLoggingController(ApplicationDbContext db, UserManager<A
         Console.WriteLine("Postrequist");
         Console.WriteLine(appointment.date);
         var user = await userManager.GetUserAsync(User);
-        var app = new Appointment();
-        app.UserId = user.Id;
-        Console.WriteLine($"duration = {appointment.duration}");
-        app.DurationInMinutes = appointment.duration;
-        app.TimeOfAppointment = appointment.date;
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var app = new Appointment
+        {
+            UserId = user.Id,
+            DurationInMinutes = appointment.duration,
+            TimeOfAppointment = appointment.date
+        };
+
         user.Appointments.Add(app);
         await db.SaveChangesAsync();
 

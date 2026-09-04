@@ -1,6 +1,8 @@
 using ClipSnip.Data;
 using ClipSnip.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +22,14 @@ builder.Services.AddHealthChecks()
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .Build();
+
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
 // Recommendation service for hairstyle suggestions
 builder.Services.AddScoped<ClipSnip.Services.IRecommendationService, ClipSnip.Services.RecommendationService>();
 // Face-shape analyzer and repository used by recommendation service

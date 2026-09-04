@@ -1,11 +1,19 @@
+using ClipSnip.Data;
 using ClipSnip.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace ClipSnip.Controllers
 {
     public class HomeController : Controller
     {
+
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
@@ -20,14 +28,6 @@ namespace ClipSnip.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-        [HttpPost]
-        public IActionResult ImageResult(IFormFile image)
-        {
-            
-            if (image != null) ViewBag.results = "You have hair!";
-            else ViewBag.results = "no hair for you";
-            return View();
         }
     }
 }

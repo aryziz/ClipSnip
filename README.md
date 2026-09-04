@@ -30,3 +30,7 @@ Open the URL in your browser.
 ```bash
 dotnet test
 ```
+
+## Deployment
+
+...

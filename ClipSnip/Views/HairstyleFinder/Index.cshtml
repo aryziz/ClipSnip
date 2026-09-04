@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Face Analysis";
+}
+
+
+
+<div class="face-analysis-page text-center">
+    <div class="mb-4">
+        <h1 class="display-4">Find your hairstyle</h1>
+        <p class="lead mb-2">Get a more accurate result by adjusting your face measurements.</p>
+        <p class="text-muted mb-0">We'll suggest points on your photo and update your recommendations as you move them.</p>
+    </div>
+
+    <form id="imageForm">
+        <div class="upload-card mb-4">
+            <i class="bi bi-upload fs-2"></i>
+
+            <p class="mt-2 mb-0">
+                <input id="imageInput"
+                       name="image"
+                       type="file"
+                       accept="image/*"
+                       capture="user"
+                       class="form-control" />
+            </p>
+        </div>
+
+        <div class="analysis-workspace">
+            <div id="faceEditor" class="face-editor" hidden>
+            <img id="imagePreview"
+                 alt="Uploaded face photo with editable measurement markers"
+                 class="rounded shadow-sm"
+                 hidden />
+            </div>
+
+            <div id="results" class="results-panel" hidden></div>
+        </div>
+
+        <div class="measurement-help text-start mx-auto mb-3">
+            <h2 class="h5 mb-2">How to fit the markers</h2>
+            <ol class="mb-0 ps-3">
+                <li>Place <strong>forehead top</strong> at the highest visible point of your face.</li>
+                <li>Place <strong>chin</strong> at the lowest point of your chin.</li>
+                <li>Place the width markers on the widest visible points of the forehead, cheekbones, and jaw.</li>
+                <li>Drag any marker freely; recommendations update automatically.</li>
+            </ol>
+            <p class="small text-muted mb-0 mt-2">For best results, use a front-facing photo with your hair away from your face.</p>
+        </div>
+
+        <p id="status" class="status-message" role="status" aria-live="polite">Select an image to begin.</p>
+    </form>
+
+</div>
+
+@section Scripts {
+    <script type="module" src="~/js/analysis.js"></script>
+}

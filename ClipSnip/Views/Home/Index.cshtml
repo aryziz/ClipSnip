@@ -1,16 +1,43 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
-    //ViewBag.buttonText;
+    ViewData["Title"] = "Find Your Style";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<section class="landing-page">
+    <div class="landing-content">
+        <p class="eyebrow">CLIPSNIP</p>
 
-    
-    <form asp-action="ImageResult" method="Post" enctype="multipart/form-data">
-        <i class="bi bi-upload"></i>
-        <p><input name="image" type="file" accept="image/*" class="accordion"></p>
-        <button class="btn btn-dark">Submit!</button>
-    </form>
-</div>
+        <h1>Find a hairstyle that feels like you.</h1>
+
+        <p class="landing-description">
+            Upload a photo and discover hairstyle recommendations tailored to your face shape.
+        </p>
+
+        <div class="landing-actions">
+            <a class="btn btn-primary btn-lg"
+               asp-controller="HairstyleFinder"
+               asp-action="Index">
+                Find my hairstyle
+            </a>
+
+            <a class="btn btn-outline-light btn-lg" href="#about">
+                Learn more
+            </a>
+        </div>
+    </div>
+
+    <div class="landing-visual" aria-hidden="true">
+        <canvas id="hero-canvas"></canvas>
+    </div>
+</section>
+
+<section id="about" class="landing-about">
+    <h2>Personalized recommendations</h2>
+    <p>
+        ClipSnip combines image analysis and hairstyle data to help you explore your next look.
+    </p>
+</section>
+
+@section Scripts {
+    <script type="module" src="~/js/landing.js" asp-append-version="true"></script>
+
+}

@@ -1,9 +1,11 @@
 web/wwwroot/data
 
+.env
 .idea
 bin
 cmake-build-*
-obj
+obj/
+obj/*
 venv
 *.db
 *.pyc

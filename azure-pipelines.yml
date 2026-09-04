@@ -1,19 +1,60 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  azureServiceConnection: 'ClipSnip'
+  resourceGroupName: 'ClipSnip-rg'
+  appName: 'ClipSnip'
+  buildConfiguration: 'Release'
+
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+
+- task: AzureCLI@2
+  displayName: 'Deploy Azure infrastructure'
+  inputs:
+    azureSubscription: '$(azureServiceConnection)'
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az deployment group create \
+        --resource-group $(resourceGroupName) \
+        --template-file infra/main.bicep \
+        --parameters appName=$(appName)
+
+- task: UseDotNet@2
+  displayName: 'Install .NET SDK'
+  inputs:
+    packageType: sdk
+    version: '10.x'
+
+- script: dotnet restore
+  displayName: 'Restore packages'
+
+- script: dotnet build --configuration $(buildConfiguration) --no-restore
+  displayName: 'Build'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    dotnet publish ClipSnip/ClipSnip.csproj \
+      --configuration $(buildConfiguration) \
+      --output $(Build.ArtifactStagingDirectory)/publish
+  displayName: 'Publish'
+
+- task: ArchiveFiles@2
+  displayName: 'Create deployment package'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/publish'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: '$(Build.ArtifactStagingDirectory)/clipsnip.zip'
+    replaceExistingArchive: true
+
+- task: AzureWebApp@1
+  displayName: 'Deploy ClipSnip to App Service'
+  inputs:
+    azureSubscription: '$(azureServiceConnection)'
+    appType: 'webAppLinux'
+    appName: '$(appName)'
+    package: '$(Build.ArtifactStagingDirectory)/clipsnip.zip'

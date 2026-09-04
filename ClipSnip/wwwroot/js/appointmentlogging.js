@@ -3,19 +3,7 @@ const mins = document.getElementById("durationInMinutes");
 const date = document.getElementById("dateOfAppointment");
 const hairstyle = document.getElementById("hairstyle");
 
-//console.log(ViewBag.hairstyles);
-//const hairstyleoptions = [ViewData["test"]];
-//console.log(hairstyleoptions);
-
-//hairstyleoptions.forEach((hairstring) => { 
-//    const hairoption = document.createElement("option");
-//    hairoption.value = hairstring;
-//    hairoption.textContent = hairstring;
-//    hairstyle.appendChild(hairoption);
-//    console.log(hairstring);
-//});
-
-
+date.valueAsDate = new Date();
 
 submitButton.addEventListener('click', async () => {
     const data = {
@@ -23,6 +11,7 @@ submitButton.addEventListener('click', async () => {
         date: date.value,
         hairstyle: hairstyle.value
     };
+    console.log(data);
 
     try {
         const response = await fetch("/log-appointment/log", {

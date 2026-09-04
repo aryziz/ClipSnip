@@ -5,23 +5,61 @@
 @{
 }
 
-<input type="hidden" id="customInput" data-value="@ViewBag.CustomValue" />
+<div id="appointmentForm" class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Log Appointment</h4>
+                </div>
 
-<div id="appointmentForm">
-    <label>Hairsyle:</label><br>
-    <select name="hairstyles" id="hairstyle">
-        @foreach(string op in ViewBag.hairstyles)
-        {
-            <option value="@op">@op</option>
-        }
-    </select><br />
-    <label>Duration in minutes:</label><br>
-    <input type="number" id="durationInMinutes" name="durationInMinutes" value="20"><br>
-    <label>Date:</label><br>
-    <input type="date" id="dateOfAppointment" name="dateOfAppointment">
-    <br><br>
-    <input type="submit" id="submitButton" value="Submit">
-</div> 
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="hairstyle" class="form-label">
+                            Hairstyle
+                        </label>
+                        <select name="hairstyles" id="hairstyle" class="form-select">
+                            @foreach (string op in ViewBag.hairstyles)
+                            {
+                                <option value="@op">@op</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="durationInMinutes" class="form-label">
+                            Duration (minutes)
+                        </label>
+                        <input type="number"
+                               id="durationInMinutes"
+                               name="durationInMinutes"
+                               value="20"
+                               min="1"
+                               class="form-control">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="dateOfAppointment" class="form-label">
+                            Date
+                        </label>
+                        <input type="date"
+                               id="dateOfAppointment"
+                               name="dateOfAppointment"
+                               class="form-control">
+                    </div>
+
+                    <div class="d-grid">
+                        <input type="submit"
+                               id="submitButton"
+                               value="Log Appointment"
+                               class="btn btn-primary">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts {
     <script type="module" src="~/js/appointmentlogging.js"></script>

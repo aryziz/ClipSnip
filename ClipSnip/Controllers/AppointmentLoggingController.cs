@@ -21,6 +21,7 @@ public class AppointmentLoggingController(ApplicationDbContext db, UserManager<A
     public async Task<IActionResult> LogAppointment([FromBody] AppointmentRequest appointment)
     {
         var user = await userManager.GetUserAsync(User);
+
         if (user is null)
         {
             return Unauthorized();
@@ -30,11 +31,11 @@ public class AppointmentLoggingController(ApplicationDbContext db, UserManager<A
         {
             UserId = user.Id,
             DurationInMinutes = appointment.duration,
-            TimeOfAppointment = appointment.date
+            TimeOfAppointment = appointment.date,
+            Hairstyle = appointment.hairstyle
         };
         user.Appointments.Add(app);
         await db.SaveChangesAsync();
-
         return View();
     }
 }

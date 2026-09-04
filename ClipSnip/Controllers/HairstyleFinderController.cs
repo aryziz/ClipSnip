@@ -8,11 +8,14 @@ namespace ClipSnip.Controllers;
 [Route("hairstyle-finder")]
 public class HairstyleFinderController : Controller
 {
+    private readonly ILogger<HairstyleFinderController> _logger;
     private readonly IRecommendationService _recommendationService;
     private readonly FaceShapeServices _faceShapeService;
 
-    public HairstyleFinderController(IRecommendationService recommendationService, FaceShapeServices faceShapeService)
+    public HairstyleFinderController(IRecommendationService recommendationService, FaceShapeServices faceShapeService, ILogger<HairstyleFinderController> logger)
+
     {
+        _logger = logger;
         _recommendationService = recommendationService;
         _faceShapeService = faceShapeService;
     }

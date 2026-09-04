@@ -1,9 +1,10 @@
 ﻿import * as THREE from "three";
 
 const canvas = document.getElementById("hero-canvas");
+const visual = document.querySelector(".landing-visual");
 
-if (!canvas) {
-    throw new Error("Could not find #hero-canvas");
+if (!canvas || !visual) {
+    throw new Error("Could not find hero canvas or landing visual");
 }
 
 // ============================================================
@@ -14,7 +15,7 @@ const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
     38,
-    window.innerWidth / window.innerHeight,
+    1,
     0.1,
     100
 );
@@ -31,8 +32,10 @@ const renderer = new THREE.WebGLRenderer({
     alpha: true
 });
 
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
+
+renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio, 2)
+);
 
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -712,8 +715,8 @@ scene.add(purpleLight);
 // ============================================================
 
 cardGroup.position.set(
-    1.25,
-    0,
+    1.5,
+    0.5,
     0
 );
 
@@ -749,75 +752,63 @@ window.addEventListener(
 );
 
 // ============================================================
-// Responsive
+// Responsive / Resize
 // ============================================================
 
 function updateLayout() {
+    const viewportWidth = window.innerWidth;
 
-    if (window.innerWidth < 900) {
+    cardGroup.position.set(0, 0, 0);
 
-        cardGroup.position.set(
-            0,
-            -1.4,
-            -0.8
-        );
-
-        cardGroup.scale.setScalar(
-            0.75
-        );
-
-    } else {
-
-        cardGroup.position.x =
-            1.25;
-
-        cardGroup.position.z =
-            0;
-
-        cardGroup.scale.setScalar(
-            1
-        );
+    if (viewportWidth < 600) {
+        camera.position.z = 10.5;
+        cardGroup.scale.setScalar(0.82);
+    }
+    else if (viewportWidth < 900) {
+        camera.position.z = 9.7;
+        cardGroup.scale.setScalar(0.9);
+    }
+    else {
+        camera.position.z = 9;
+        cardGroup.scale.setScalar(0.95);
     }
 }
 
-updateLayout();
+function resizeScene() {
+    const width = visual.clientWidth;
+    const height = visual.clientHeight;
 
-// ============================================================
-// Resize
-// ============================================================
-
-window.addEventListener(
-    "resize",
-    () => {
-
-        camera.aspect =
-            window.innerWidth /
-            window.innerHeight;
-
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(
-            window.innerWidth,
-            window.innerHeight
-        );
-
-        renderer.setPixelRatio(
-            Math.min(
-                window.devicePixelRatio,
-                2
-            )
-        );
-
-        updateLayout();
+    if (!width || !height) {
+        return;
     }
-);
+
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(width, height, false);
+
+    renderer.setPixelRatio(
+        Math.min(window.devicePixelRatio, 2)
+    );
+}
+
+function updateScene() {
+    updateLayout();
+    resizeScene();
+}
+
+window.addEventListener("resize", updateScene);
+
+const resizeObserver = new ResizeObserver(resizeScene);
+resizeObserver.observe(visual);
+
+updateScene();
 
 // ============================================================
 // Animation
 // ============================================================
 
-const clock =
-    new THREE.Clock();
+const clock = new THREE.Clock();
 
 const reducedMotion =
     window.matchMedia(
@@ -825,46 +816,36 @@ const reducedMotion =
     ).matches;
 
 function animate() {
+    requestAnimationFrame(animate);
 
-    requestAnimationFrame(
-        animate
-    );
-
-    const time =
-        clock.getElapsedTime();
+    const time = clock.getElapsedTime();
 
     if (!reducedMotion) {
 
-        // --------------------------------------------
-        // Floating
-        // --------------------------------------------
-
-        const baseY =
-            window.innerWidth < 900
-                ? -1.4
-                : 0;
-
+        // Gentle floating
         cardGroup.position.y =
-            baseY +
-            Math.sin(time * 0.75) *
-            0.08;
+            Math.sin(time * 0.75) * 0.08;
 
-        // --------------------------------------------
-        // Mouse tilt
-        // --------------------------------------------
+        const isMobile =
+            window.innerWidth < 900;
+
+        const mouseTiltY =
+            isMobile ? 0 : mouse.x * 0.18;
+
+        const mouseTiltX =
+            isMobile ? 0 : mouse.y * 0.10;
 
         const targetRotationY =
-            -0.25 +
-            mouse.x * 0.28 +
-            Math.sin(time * 0.25) * 0.05;
+            -0.16 +
+            mouseTiltY +
+            Math.sin(time * 0.25) * 0.025;
 
         const targetRotationX =
-            -0.10 -
-            mouse.y * 0.18;
+            -0.06 -
+            mouseTiltX;
 
         const targetRotationZ =
-            -0.025 +
-            mouse.x * 0.025;
+            -0.015;
 
         cardGroup.rotation.y +=
             (
@@ -885,10 +866,7 @@ function animate() {
             ) * 0.035;
     }
 
-    renderer.render(
-        scene,
-        camera
-    );
+    renderer.render(scene, camera);
 }
 
 animate();

@@ -123,13 +123,21 @@ body {
 
 .landing-page {
     position: relative;
-    min-height: calc(100vh - 150px);
-    overflow: hidden;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: center;
-    border-radius: 24px;
-    background: radial-gradient(circle at 75% 45%, rgba(255, 92, 168, 0.28), transparent 28%), radial-gradient(circle at 20% 80%, rgba(108, 99, 255, 0.3), transparent 30%), #11111d;
+    min-height: 720px;
+    overflow: hidden;
+    background: radial-gradient( circle at 75% 40%, rgba(139, 92, 246, 0.18), transparent 35% ), linear-gradient( 135deg, #09090b, #18181b );
     color: white;
+    border-radius: 2rem;
+}
+
+.landing-visual {
+    position: relative;
+    width: 100%;
+    height: 620px;
+    min-width: 0;
 }
 
 #hero-canvas {
@@ -138,13 +146,14 @@ body {
     width: 100%;
     height: 100%;
     display: block;
+    pointer-events: none;
 }
 
 .landing-content {
     position: relative;
-    z-index: 1;
-    width: min(620px, 100%);
-    padding: 4rem;
+    z-index: 2;
+    padding: 5rem;
+    max-width: 760px;
 }
 
 .eyebrow {
@@ -171,9 +180,8 @@ body {
 
 .landing-actions {
     display: flex;
-    flex-wrap: wrap;
     gap: 1rem;
-    margin-top: 2rem;
+    flex-wrap: wrap;
 }
 
 .landing-about {
@@ -185,12 +193,53 @@ body {
         color: #666;
     }
 
-@media (max-width: 768px) {
-    .landing-content {
-        padding: 2rem;
+@media (max-width: 900px) {
+    .landing-page {
+        grid-template-columns: 1fr;
+        min-height: auto;
     }
 
+    .landing-content {
+        padding: 3rem 2.5rem 1.5rem;
+        max-width: none;
+    }
+
+    .landing-visual {
+        height: 430px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
     .landing-page {
-        min-height: calc(100vh - 120px);
+        border-radius: 1.5rem;
+    }
+
+    .landing-content {
+        padding: 2.5rem 1.5rem 1rem;
+    }
+
+        .landing-content h1 {
+            font-size: clamp(3rem, 13vw, 4.25rem);
+            line-height: 0.95;
+        }
+
+    .landing-description {
+        font-size: 1.1rem;
+        line-height: 1.55;
+    }
+
+    .landing-actions {
+        gap: 0.75rem;
+    }
+
+        .landing-actions .btn {
+            flex: 1 1 auto;
+            white-space: nowrap;
+        }
+
+    .landing-visual {
+        height: 340px;
+        margin-top: 1rem;
     }
 }

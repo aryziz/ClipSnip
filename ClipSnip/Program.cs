@@ -1,6 +1,8 @@
 using ClipSnip.Data;
 using ClipSnip.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,10 +16,20 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>();
+
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .Build();
+
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
 // Recommendation service for hairstyle suggestions
 builder.Services.AddScoped<ClipSnip.Services.IRecommendationService, ClipSnip.Services.RecommendationService>();
 // Face-shape analyzer and repository used by recommendation service
@@ -30,8 +42,6 @@ await using (var scope = app.Services.CreateAsyncScope())
 {
     var services = scope.ServiceProvider;
     var db = services.GetRequiredService<ApplicationDbContext>();
-
-    await db.Database.MigrateAsync();
 
     if (app.Configuration.GetValue<bool>("Database:Seed"))
     {
@@ -67,6 +77,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapHealthChecks("/health");
 
 app.MapControllerRoute(
     name: "default",

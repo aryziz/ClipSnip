@@ -80,6 +80,7 @@ namespace ClipSnip.Migrations
                     TimeOfAppointment = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DurationInMinutes = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Hairstyle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClipSnip.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260821121634_Appointments")]
+    [Migration("20260904083953_Appointments")]
     partial class Appointments
     {
         /// <inheritdoc />
@@ -103,6 +103,10 @@ namespace ClipSnip.Migrations
 
                     b.Property<int>("DurationInMinutes")
                         .HasColumnType("int");
+
+                    b.Property<string>("Hairstyle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("TimeOfAppointment")
                         .HasColumnType("datetime2");

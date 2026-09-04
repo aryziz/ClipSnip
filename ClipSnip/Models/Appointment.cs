@@ -10,5 +10,6 @@ namespace ClipSnip.Models
         public DateTime TimeOfAppointment { get; set; }
         public int DurationInMinutes {  get; set; }
         public string UserId { get; set; }
+        public string Hairstyle { get; set; }
     }
 }

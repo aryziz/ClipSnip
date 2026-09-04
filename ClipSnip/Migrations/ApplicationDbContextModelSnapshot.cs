@@ -101,6 +101,10 @@ namespace ClipSnip.Migrations
                     b.Property<int>("DurationInMinutes")
                         .HasColumnType("int");
 
+                    b.Property<string>("Hairstyle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("TimeOfAppointment")
                         .HasColumnType("datetime2");
 

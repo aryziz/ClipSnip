@@ -12,6 +12,14 @@ variables:
 
 steps:
 
+- script: |
+    echo "Current directory:"
+    pwd
+
+    echo "Repository contents:"
+    find . -maxdepth 3 -type f | sort
+  displayName: 'Debug repository structure'
+
 - task: AzureCLI@2
   displayName: 'Deploy Azure infrastructure'
   inputs:

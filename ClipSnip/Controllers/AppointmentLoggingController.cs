@@ -36,6 +36,7 @@ public class AppointmentLoggingController(ApplicationDbContext db, UserManager<A
         };
         user.Appointments.Add(app);
         await db.SaveChangesAsync();
+
         return View();
     }
 }

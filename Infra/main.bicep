@@ -1,7 +1,8 @@
 ﻿param location string = resourceGroup().location
 param appName string
 
-var appServicePlanName = '${appName}-plan'
+var uniqueAppName = '${toLower(appName)}-${uniqueString(resourceGroup().id)}'
+var appServicePlanName = '${uniqueAppName}-plan'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: appServicePlanName
@@ -17,7 +18,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
 }
 
 resource webApp 'Microsoft.Web/sites@2024-04-01' = {
-  name: appName
+  name: uniqueAppName
   location: location
   properties: {
     serverFarmId: appServicePlan.id

@@ -95,9 +95,6 @@ namespace ClipSnip.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UniqueId"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("DurationInMinutes")
                         .HasColumnType("int");
 
@@ -110,11 +107,12 @@ namespace ClipSnip.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UniqueId");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Appointments");
                 });
@@ -258,9 +256,13 @@ namespace ClipSnip.Migrations
 
             modelBuilder.Entity("ClipSnip.Models.Appointment", b =>
                 {
-                    b.HasOne("ClipSnip.Models.ApplicationUser", null)
+                    b.HasOne("ClipSnip.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Appointments")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

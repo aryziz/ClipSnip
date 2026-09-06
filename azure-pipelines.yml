@@ -7,7 +7,7 @@ pool:
 variables:
   azureServiceConnection: 'ClipSnip'
   resourceGroupName: 'ClipSnip-rg'
-  appName: 'ClipSnip'
+  appName: 'ClipSnip-webapp'
   buildConfiguration: 'Release'
 
 steps:
@@ -30,7 +30,9 @@ steps:
       az deployment group create \
         --resource-group $(resourceGroupName) \
         --template-file infra/main.bicep \
-        --parameters appName=$(appName)
+        --parameters \
+          appName=$(appName) \
+          sqlAdminPassword="$(SQL_ADMIN_PASSWORD)"
 
 - task: UseDotNet@2
   displayName: 'Install .NET SDK'
@@ -43,6 +45,9 @@ steps:
 
 - script: dotnet build --configuration $(buildConfiguration) --no-restore
   displayName: 'Build'
+
+- script: dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
+  displayName: 'Run tests'
 
 - script: |
     dotnet publish ClipSnip/ClipSnip.csproj \

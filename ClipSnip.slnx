@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path="azure-pipelines.yml" />
     <File Path="docker-compose.yml" />
+    <File Path="Infra/main.bicep" />
     <File Path="README.md" />
   </Folder>
   <Folder Name="/tests/">

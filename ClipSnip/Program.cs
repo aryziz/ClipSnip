@@ -40,20 +40,38 @@ var app = builder.Build();
 
 await using (var scope = app.Services.CreateAsyncScope())
 {
-    var services = scope.ServiceProvider;
-    var db = services.GetRequiredService<ApplicationDbContext>();
-
-    if (app.Configuration.GetValue<bool>("Database:Seed"))
+    try
     {
-        app.Logger.LogInformation("Database seeding is enabled.");
+        var services = scope.ServiceProvider;
+        var db = services.GetRequiredService<ApplicationDbContext>();
 
-        await ApplicationDbInitializer.InitializeAsync(
-            services.GetRequiredService<UserManager<ApplicationUser>>(),
-            services.GetRequiredService<RoleManager<IdentityRole>>());
+        app.Logger.LogInformation("Starting database migration...");
+
+        await db.Database.MigrateAsync();
+
+        app.Logger.LogInformation("Database migration completed.");
+
+        if (app.Configuration.GetValue<bool>("Database:Seed"))
+        {
+            app.Logger.LogInformation("Database seeding is enabled.");
+
+            await ApplicationDbInitializer.InitializeAsync(
+                services.GetRequiredService<UserManager<ApplicationUser>>(),
+                services.GetRequiredService<RoleManager<IdentityRole>>());
+        }
+        else
+        {
+            app.Logger.LogInformation("Database seeding is disabled.");
+        }
     }
-    else
+    catch (Exception ex)
     {
-        app.Logger.LogInformation("Database seeding is disabled.");
+        app.Logger.LogCritical(ex, "Database initialization failed.");
+
+        Console.Error.WriteLine("DATABASE INITIALIZATION FAILED:");
+        Console.Error.WriteLine(ex);
+
+        throw;
     }
 }
 

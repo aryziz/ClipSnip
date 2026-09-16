@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using ClipSnip.Controllers;
 using ClipSnip.Models;
 using ClipSnip.Services;
@@ -13,6 +14,9 @@ public class HairstyleFinderControllerTests
     {
         var mockSvc = new Mock<IRecommendationService>();
         var mockFaceShape = new Mock<FaceShapeServices>();
+        var mockLogger = new Mock<ILogger<HairstyleFinderController>>();
+     
+  
 
         var expectedVm = new HairstyleRecommendationsViewModel
         {
@@ -24,7 +28,7 @@ public class HairstyleFinderControllerTests
             .Setup(s => s.GetRecommendations(It.IsAny<FaceAnalysisRequest>()))
             .Returns(expectedVm);
 
-        var controller = new HairstyleFinderController(mockSvc.Object, mockFaceShape.Object);
+        var controller = new HairstyleFinderController(mockSvc.Object, mockFaceShape.Object, mockLogger.Object);
 
         var request = new FaceAnalysisRequest
         {

@@ -20,7 +20,6 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   location: location
   sku: {
     name: 'F1'
-    tier: 'Basic'
   }
   kind: 'linux'
   properties: {

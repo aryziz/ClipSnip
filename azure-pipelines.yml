@@ -9,8 +9,17 @@ variables:
   resourceGroupName: 'ClipSnip-rg'
   appName: 'ClipSnip-webapp'
   buildConfiguration: 'Release'
+  keyVaultName: 'clipsnip-kv-msu2'
 
 steps:
+
+- task: AzureKeyVault@2
+  displayName: 'Fetch secrets from Key Vault'
+  inputs:
+    azureSubscription: '$(azureServiceConnection)'
+    KeyVaultName: '$(keyVaultName)'
+    SecretsFilter: 'SqlAdminPassword'
+    RunAsPreJob: true
 
 - task: AzureCLI@2
   displayName: 'Deploy Azure infrastructure'
@@ -19,12 +28,17 @@ steps:
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
-      az deployment group create \
-        --resource-group $(resourceGroupName) \
+      DEPLOYED_APP_NAME=$(az deployment group create \
+        --resource-group "$(resourceGroupName)" \
         --template-file infra/main.bicep \
         --parameters \
-          appName=$(appName) \
-          sqlAdminPassword="$(SQL_ADMIN_PASSWORD)"
+          appName="$(appName)" \
+          sqlAdminPassword="$SQL_ADMIN_PASSWORD" \
+        --query "properties.outputs.appServiceName.value" \
+        --output tsv)
+      echo "##vso[task.setvariable variable=deployedAppName]$DEPLOYED_APP_NAME"
+  env:
+    SQL_ADMIN_PASSWORD: $(SqlAdminPassword)
 
 - task: UseDotNet@2
   displayName: 'Install .NET SDK'
@@ -61,5 +75,5 @@ steps:
   inputs:
     azureSubscription: '$(azureServiceConnection)'
     appType: 'webAppLinux'
-    appName: '$(appName)'
+    appName: '$(deployedAppName)'
     package: '$(Build.ArtifactStagingDirectory)/clipsnip.zip'

@@ -92,7 +92,7 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
     httpsOnly: true
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|10.0'
-      alwaysOn: true
+      alwaysOn: false
       appSettings: [
         {
           name: 'ConnectionStrings__DefaultConnection'

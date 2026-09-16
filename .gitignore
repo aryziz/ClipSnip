@@ -7,11 +7,13 @@ cmake-build-*
 obj/
 obj/*
 venv
+clipsnip.zip
 *.db
 *.pyc
 *.swp
 *.db-shm
 *.db-wal
+
 
 # From VisualStudio.gitignore (Removed duplicates)
 

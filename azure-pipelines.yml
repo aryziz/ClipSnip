@@ -110,7 +110,7 @@ stages:
           az deployment group create \
             --name "$DEPLOYMENT_NAME" \
             --resource-group "$(resourceGroupName)" \
-            --template-file infra/main.bicep \
+            --template-file Infra/main.bicep \
             --parameters \
               appName="$(appName)" \
               sqlAdminPassword="$SQL_ADMIN_PASSWORD"

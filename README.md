@@ -1,36 +1,74 @@
 # ClipSnip
 
-In this app you can upload a picture of yourself and get a recommended hairstyle or see what you would look like with other hairstyles, log your barber visits and share hairstyles with your friends.
+ClipSnip is an ASP.NET Core MVC application hosted in Microsoft Azure.
 
+The application uses Azure App Service for hosting, Azure SQL Database for persistent storage, Azure Key Vault for secrets, and Azure Managed Identity for secure access to Azure resources.
 
-# For Developers
+---
 
-## Run the project
+## Architecture
 
-From the repository root, restore the project dependencies:
+The production environment is hosted in Azure and consists of an application layer, security layer, and data layer.
 
-dotnet restore
+```mermaid
+flowchart TB
+    User["👤 User / Browser"]
 
-Run the application:
+    subgraph Azure["Azure Resource Group - ClipSnip-rg"]
 
-```bash
-dotnet run --project ClipSnip/
+        subgraph AppLayer["Application Layer"]
+            App["🌐 Azure App Service<br/>clipsnip-webapp-klugg7uj4px3q"]
+            Plan["⚙️ App Service Plan<br/>clipsnip-webapp-klugg7uj4px3q-plan"]
+        end
+
+        subgraph Security["Identity & Secrets"]
+            MI["🔐 Managed Identity<br/>clipsnip-ado-mi"]
+            KV["🔑 Azure Key Vault<br/>clipsnip-kv-msu2"]
+        end
+
+        subgraph DataLayer["Data Layer"]
+            SQLServer["🗄️ Azure SQL Server<br/>clipsnip-webapp-klugg7uj4px3q-sql"]
+            DB["💾 Azure SQL Database<br/>ClipSnipDb"]
+        end
+
+    end
+
+    User -->|"HTTPS"| App
+
+    Plan -.->|"Hosts / provides compute"| App
+
+    App -->|"Application data"| DB
+    DB -->|"Hosted on"| SQLServer
+
+    App -->|"Retrieve secrets / configuration"| KV
+
+    MI -.->|"Authenticated access"| KV
+    MI -.->|"Deployment / resource access"| App
 ```
 
-Or for hot reloading:
+### Azure Resources
 
-```bash
-dotnet watch run --project ClipSnip/
-```
+| Resource | Purpose |
+|---|---|
+| **Azure App Service** | Hosts the ASP.NET Core MVC application |
+| **App Service Plan** | Provides compute resources for the App Service |
+| **Azure SQL Server** | Logical SQL server hosting the application database |
+| **ClipSnipDb** | Main production database |
+| **Azure Key Vault** | Stores sensitive configuration and secrets |
+| **Managed Identity** | Provides identity-based authentication to Azure resources |
 
-Open the URL in your browser.
+---
 
-## Run tests
+## Technology Stack
 
-```bash
-dotnet test
-```
-
-## Deployment
-
-...
+- ASP.NET Core MVC
+- .NET 10
+- Entity Framework Core
+- ASP.NET Core Identity
+- Azure App Service
+- Azure SQL Database
+- Azure Key Vault
+- Azure Managed Identity
+- Azure DevOps
+- Bicep
+- Google MediaPipe

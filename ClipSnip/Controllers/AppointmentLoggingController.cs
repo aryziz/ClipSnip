@@ -13,7 +13,8 @@ public class AppointmentLoggingController(ApplicationDbContext db, UserManager<A
     [HttpGet("")]
     public IActionResult Index()
     {
-        ViewBag.hairstyles = new[] { "hair1", "hair2" };
+        HairstyleRepository hr = new HairstyleRepository();
+        ViewBag.hairstyles = hr.GetHairstyles().Select(x => x.Name).ToArray();
         return View();
     }
 

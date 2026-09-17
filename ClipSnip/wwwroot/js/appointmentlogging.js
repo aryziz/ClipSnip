@@ -13,6 +13,7 @@ submitButton.addEventListener('click', async () => {
     };
     console.log(data);
 
+    var message = "";
     try {
         const response = await fetch("/log-appointment/log", {
             method: "POST",
@@ -21,8 +22,11 @@ submitButton.addEventListener('click', async () => {
             },
             body: JSON.stringify(data)
         });
+        message = "Your appointment was succesfully logged";
     }
     catch (error) {
         status.textContent = error.message;
+        message = "Log failed:\n" + error.message;
     }
+    alert(message);
 });

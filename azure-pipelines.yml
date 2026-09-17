@@ -12,7 +12,7 @@ variables:
   resourceGroupName: "ClipSnip-rg"
   appName: "ClipSnip-webapp"
   buildConfiguration: "Release"
-  keyVaultName: "clipsnip-kv-msu2"
+  keyVaultName: "clipsnip-kv-msu"
 
 stages:
 

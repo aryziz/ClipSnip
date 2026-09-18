@@ -17,13 +17,26 @@
 
             <div class="recommendation-details">
                 <p class="recommendation-eyebrow">Your style</p>
+                <label class="recommendation-style-label" for="recommendation-style">Choose a recommended style</label>
+                <select id="recommendation-style" class="recommendation-style-select" aria-describedby="recommendation-title">
+                    @foreach (var hairstyle in Model.Recommendations)
+                    {
+                        <option value="@hairstyle.Id"
+                                data-subtitle="@hairstyle.Subtitle"
+                                data-estimated-time="@hairstyle.EstimatedTime"
+                                data-image-path="@hairstyle.ImagePath"
+                                data-notes="@string.Join("||", hairstyle.BarberNotes)">
+                            @hairstyle.Name
+                        </option>
+                    }
+                </select>
                 <h2 id="recommendation-title">@Model.HaircutName</h2>
                 <p class="recommendation-subtitle">@Model.HaircutSubtitle</p>
 
                 <div class="recommendation-facts">
                     <div class="recommendation-fact">
                         <span>Estimated time</span>
-                        <strong>@Model.EstimatedTime</strong>
+                        <strong class="recommendation-time">@Model.EstimatedTime</strong>
                     </div>
                     <div class="recommendation-fact">
                         <span>Face shape</span>
@@ -33,7 +46,7 @@
 
                 <div class="barber-notes">
                     <h3>Barber notes</h3>
-                    <ul>
+                    <ul class="recommendation-notes">
                         @foreach (var note in Model.BarberNotes)
                         {
                             <li>@note</li>
@@ -53,4 +66,3 @@ else
         <p>More face analysis data is needed to suggest a hairstyle.</p>
     </div>
 }
-</div>

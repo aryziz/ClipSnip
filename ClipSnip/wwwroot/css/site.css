@@ -126,6 +126,29 @@ body {
   text-transform: uppercase;
 }
 
+.recommendation-style-label {
+  display: block;
+  margin-top: 1rem;
+  color: #a7a1b6;
+  font-size: 0.75rem;
+}
+
+.recommendation-style-select {
+  width: 100%;
+  margin: 0.45rem 0 1rem;
+  padding: 0.75rem 2.5rem 0.75rem 0.85rem;
+  color: #f5f3fa;
+  font: inherit;
+  border: 1px solid rgba(167, 123, 255, 0.45);
+  border-radius: 0.65rem;
+  background: #211e2c;
+}
+
+.recommendation-style-select:focus {
+  outline: 2px solid #a77bff;
+  outline-offset: 2px;
+}
+
 .recommendation-status {
   display: inline-flex;
   align-items: center;

@@ -12,6 +12,33 @@ import {
 
 let faceLandmarker;
 
+document.addEventListener('change', (event) => {
+    const select = event.target.closest('.recommendation-style-select');
+    if (!select) return;
+
+    const option = select.selectedOptions[0];
+    const card = select.closest('.recommendation-card');
+    if (!option || !card) return;
+
+    card.querySelector('#recommendation-title').textContent = option.textContent.trim();
+    card.querySelector('.recommendation-subtitle').textContent = option.dataset.subtitle || '';
+    card.querySelector('.recommendation-time').textContent = option.dataset.estimatedTime || '';
+
+    const image = card.querySelector('.recommendation-image-panel img');
+    image.src = option.dataset.imagePath || image.src;
+    image.alt = `Silhouette representing the recommended ${option.textContent.trim()} haircut`;
+
+    const notes = card.querySelector('.recommendation-notes');
+    notes.replaceChildren(...(option.dataset.notes || '')
+        .split('||')
+        .filter(note => note.length > 0)
+        .map(note => {
+            const item = document.createElement('li');
+            item.textContent = note;
+            return item;
+        }));
+});
+
 async function initializeMediaPipe() {
     const vision = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"

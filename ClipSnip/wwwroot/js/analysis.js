@@ -306,7 +306,7 @@ function setupEditableOverlay(initialPointsNormalized) {
 
     const resetBtn = document.createElement('button');
     resetBtn.type = 'button';
-    resetBtn.className = 'btn btn-secondary';
+    resetBtn.className = 'btn btn-primary';
     resetBtn.textContent = 'Reset markers';
     resetBtn.addEventListener('click', () => {
 

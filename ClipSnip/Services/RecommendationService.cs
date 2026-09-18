@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using ClipSnip.Data;
 using ClipSnip.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClipSnip.Services;
 
@@ -9,11 +10,16 @@ public class RecommendationService : IRecommendationService
 {
     private readonly FaceShapeServices _faceShapeService;
     private readonly HairstyleRepository _repository;
+    private readonly ApplicationDbContext? _db;
 
-    public RecommendationService(FaceShapeServices faceShapeService, HairstyleRepository repository)
+    public RecommendationService(
+        FaceShapeServices faceShapeService,
+        HairstyleRepository repository,
+        ApplicationDbContext? db = null)
     {
         _faceShapeService = faceShapeService;
         _repository = repository;
+        _db = db;
     }
 
     public HairstyleRecommendationsViewModel GetRecommendations(FaceAnalysisRequest request)
@@ -54,12 +60,44 @@ public class RecommendationService : IRecommendationService
             .Where(h => h.SuitableFaceShapes
                 .Any(shape => shape.Equals(faceShape, StringComparison.OrdinalIgnoreCase)))
             .ToList();
+        var recommendation = recommendations.FirstOrDefault();
 
         return new HairstyleRecommendationsViewModel
         {
             FaceShape = faceShape,
+            HaircutName = recommendation?.Name ?? string.Empty,
+            HaircutSubtitle = recommendation?.Subtitle ?? recommendation?.Description ?? string.Empty,
+            EstimatedTime = GetEstimatedTime(recommendation),
+            BarberNotes = recommendation?.BarberNotes ?? new List<string>(),
+            ImagePath = recommendation?.ImagePath ?? "/img/hair-silhouette.jpg",
             Reasons = reasons,
             Recommendations = recommendations
         };
+    }
+
+    private string GetEstimatedTime(Hairstyle? recommendation)
+    {
+        if (recommendation is null)
+        {
+            return string.Empty;
+        }
+
+        if (_db is null)
+        {
+            return recommendation.EstimatedTime;
+        }
+
+        var averageDuration = _db.Appointments
+            .AsNoTracking()
+            .Where(appointment =>
+                appointment.DurationInMinutes > 0 &&
+                appointment.Hairstyle != null &&
+                appointment.Hairstyle.ToLower() == recommendation.Name.ToLower())
+            .Select(appointment => (double?)appointment.DurationInMinutes)
+            .Average();
+
+        return averageDuration.HasValue
+            ? $"{Math.Round(averageDuration.Value, MidpointRounding.AwayFromZero):0} min average"
+            : recommendation.EstimatedTime;
     }
 }

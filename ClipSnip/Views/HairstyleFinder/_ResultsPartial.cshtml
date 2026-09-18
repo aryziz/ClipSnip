@@ -1,46 +1,68 @@
 @model ClipSnip.Models.HairstyleRecommendationsViewModel
 
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">Face shape: @Model.FaceShape</h5>
+@if (Model.Recommendations?.Any() == true)
+{
+    <article class="recommendation-card" aria-labelledby="recommendation-title">
+        <header class="recommendation-header">
+            <span class="recommendation-brand">ClipSnip</span>
+            <span class="recommendation-status" aria-label="Recommendation ready">
+                <span aria-hidden="true">✓</span> Ready
+            </span>
+        </header>
 
-        @if (Model.Reasons?.Any() == true)
-        {
-            <h6>Reasons</h6>
-            <ul>
-                @foreach (var r in Model.Reasons)
-                {
-                    <li>@r</li>
-                }
-            </ul>
-        }
-
-        @if (Model.Recommendations?.Any() == true)
-        {
-            <h6 class="mt-3">Recommended hairstyles</h6>
-            <div class="row g-3">
-                @foreach (var h in Model.Recommendations)
-                {
-                    <div class="col-12 col-md-6">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h6 class="card-title">@h.Name</h6>
-                                <p class="card-text">@h.Description</p>
-                                <p class="text-muted small">@string.Join(", ", h.SuitableFaceShapes)</p>
-                            </div>
-                        </div>
-                    </div>
-                }
+        <div class="recommendation-content">
+            <div class="recommendation-image-panel">
+                <img src="@Model.ImagePath" alt="Silhouette representing the recommended @Model.HaircutName haircut" />
             </div>
-        } else {
-            <div class="col-12 col-md-6">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h6 class="card-title">No recommendations found.</h6>
-                                <p class="card-text">More data is needed.</p>
-                            </div>
-                        </div>
+
+            <div class="recommendation-details">
+                <p class="recommendation-eyebrow">Your style</p>
+                <label class="recommendation-style-label" for="recommendation-style">Choose a recommended style</label>
+                <select id="recommendation-style" class="recommendation-style-select" aria-describedby="recommendation-title">
+                    @foreach (var hairstyle in Model.Recommendations)
+                    {
+                        <option value="@hairstyle.Id"
+                                data-subtitle="@hairstyle.Subtitle"
+                                data-estimated-time="@hairstyle.EstimatedTime"
+                                data-image-path="@hairstyle.ImagePath"
+                                data-notes="@string.Join("||", hairstyle.BarberNotes)">
+                            @hairstyle.Name
+                        </option>
+                    }
+                </select>
+                <h2 id="recommendation-title">@Model.HaircutName</h2>
+                <p class="recommendation-subtitle">@Model.HaircutSubtitle</p>
+
+                <div class="recommendation-facts">
+                    <div class="recommendation-fact">
+                        <span>Estimated time</span>
+                        <strong class="recommendation-time">@Model.EstimatedTime</strong>
                     </div>
-        }
+                    <div class="recommendation-fact">
+                        <span>Face shape</span>
+                        <strong>@Model.FaceShape</strong>
+                    </div>
+                </div>
+
+                <div class="barber-notes">
+                    <h3>Barber notes</h3>
+                    <ul class="recommendation-notes">
+                        @foreach (var note in Model.BarberNotes)
+                        {
+                            <li>@note</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer class="recommendation-footer">Generated for your next haircut</footer>
+    </article>
+}
+else
+{
+    <div class="recommendation-empty" role="status">
+        <h2>No recommendation found</h2>
+        <p>More face analysis data is needed to suggest a hairstyle.</p>
     </div>
-</div>
+}
